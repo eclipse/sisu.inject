@@ -12,6 +12,7 @@ package org.eclipse.sisu.bean;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,16 +38,19 @@ public final class LifecycleManager
     // Public methods
     // ----------------------------------------------------------------------
 
+    @Override
     public boolean manage( final Class<?> clazz )
     {
         return buildLifecycle( clazz );
     }
 
+    @Override
     public PropertyBinding manage( final BeanProperty<?> property )
     {
         return null; // no custom property bindings
     }
 
+    @Override
     public boolean manage( final Object bean )
     {
         final BeanLifecycle lifecycle = lifecycleFor( bean );
@@ -61,6 +65,7 @@ public final class LifecycleManager
         return true;
     }
 
+    @Override
     public boolean unmanage( final Object bean )
     {
         if ( removeStoppable( bean ) )
@@ -70,6 +75,7 @@ public final class LifecycleManager
         return true;
     }
 
+    @Override
     public boolean unmanage()
     {
         for ( Object bean; ( bean = popStoppable() ) != null; )
@@ -155,5 +161,39 @@ public final class LifecycleManager
         {
             return stoppableBeans.pollLast();
         }
+    }
+
+    /**
+     * Flush the cache for each key that satisfies the given predicate
+     * 
+     * @param remove a tester that can decide if this key needs to be flushed or
+     *               not.
+     */
+    public void flushCacheFor( ClassTester remove )
+    {
+        for ( Iterator<Class<?>> iterator = lifecycles.keySet().iterator(); iterator.hasNext(); )
+        {
+            if ( remove.shouldFlush( iterator.next() ) )
+            {
+                iterator.remove();
+            }
+        }
+    }
+
+    /**
+     * Allows testing if a class should be flushed from the cache
+     */
+    public static interface ClassTester
+    {
+
+        /**
+         * Test if class should be flushed
+         * 
+         * @param clz the class to test
+         * @return <code>true</code> if class must be flushed, <code>false</code>
+         *         otherwise
+         */
+        boolean shouldFlush( Class<?> clz );
+
     }
 }
