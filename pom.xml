@@ -119,7 +119,7 @@
 
     <!-- Versions -->
     <mavenRuntimeVersion>3.2.5</mavenRuntimeVersion>
-    <mavenBuildVersion>3.6.3</mavenBuildVersion>
+    <mavenBuildVersion>3.9.7</mavenBuildVersion>
     <javaBuildVersion>11</javaBuildVersion>
     <mavenPluginToolsVersion>3.13.1</mavenPluginToolsVersion>
     <!-- Note: this version is used in tests, to update embedded asm use bin/update_asm.sh -->
